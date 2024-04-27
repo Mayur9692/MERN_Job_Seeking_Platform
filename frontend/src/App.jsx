@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import "./App.css";
 import { Context } from "./main";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import { Toaster } from "react-hot-toast";
@@ -19,6 +19,7 @@ import MyJobs from "./components/Job/MyJobs";
 
 const App = () => {
   const { isAuthorized, setIsAuthorized, setUser } = useContext(Context);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -34,16 +35,26 @@ const App = () => {
         setIsAuthorized(false);
       }
     };
-    fetchUser();
-  }, [isAuthorized]);
+
+   
+    if (!isAuthorized) {
+      fetchUser();
+    }
+  }, []);
 
   return (
     <>
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route
+            path="/login"
+            element={isAuthorized ? <Navigate to="/" /> : <Login />}
+          />
+          <Route
+            path="/register"
+            element={isAuthorized ? <Navigate to="/" /> : <Register />}
+          />
           <Route path="/" element={<Home />} />
           <Route path="/job/getall" element={<Jobs />} />
           <Route path="/job/:id" element={<JobDetails />} />
